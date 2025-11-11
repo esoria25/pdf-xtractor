@@ -1,0 +1,38 @@
+# GitHub Pages Configuration for BlockCell PDF Extractor
+title: "BlockCell PDF Extractor"
+description: "Powerful PDF text and image extraction tool"
+url: "https://yourusername.github.io"
+baseurl: "/cash-app-pdf-extractor"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .sass-cache
+  - .jekyll-cache
+
+# Include files
+include:
+  - _pages
+
+# Collections
+collections:
+  pages:
+    output: true
+    permalink: /:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
