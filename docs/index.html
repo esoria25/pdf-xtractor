@@ -614,35 +614,9 @@
             ease: 'sine.inOut'
         });
 
-        // Placeholder functions for interactivity
-        function removeFile() {
-            console.log('Remove file');
-        }
-
-        function extractText() {
-            console.log('Extract text');
-        }
-
-        function reset() {
-            console.log('Reset');
-        }
-
-        function downloadExcel() {
-            console.log('Download Excel');
-        }
-
-        function downloadText() {
-            console.log('Download text');
-        }
-
-        function copyText() {
-            console.log('Copy text');
-        }
-
-        function togglePreview() {
-            console.log('Toggle preview');
-        }
-
+        // Load external upload functionality
+        // Functions are defined in upload-functionality.js
+        
         function openAIChat() {
             document.getElementById('chatWindow').style.display = 'flex';
         }
@@ -657,5 +631,7 @@
             document.getElementById('chatWindow').style.display = 'none';
         });
     </script>
+    <script src="script.js"></script>
+    <script src="upload-functionality.js"></script>
 </body>
 </html>
