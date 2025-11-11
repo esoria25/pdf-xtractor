@@ -4,739 +4,680 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Extractor - BlockCell</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary-color: #f8fafc;
-            --accent-color: #06b6d4;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background-color: #ffffff;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        /* Header */
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo::before {
-            content: "📄";
-            font-size: 1.8rem;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        nav a:hover {
-            color: var(--primary-color);
-        }
-
-        /* Hero Section */
-        .hero {
-            background: var(--gradient-bg);
-            color: white;
-            padding: 8rem 0 6rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            opacity: 0.3;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: fadeInUp 1s ease-out 0.2s both;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: white;
-            color: var(--primary-color);
-            padding: 1rem 2rem;
-            border-radius: 0.75rem;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            box-shadow: var(--card-shadow);
-            transition: all 0.3s ease;
-            animation: fadeInUp 1s ease-out 0.4s both;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--card-shadow-hover);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 6rem 0;
-            background: var(--secondary-color);
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .section-title p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: var(--card-shadow);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--card-shadow-hover);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .feature-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .feature-card p {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        /* Upload Section */
-        .upload-section {
-            padding: 6rem 0;
-            background: white;
-        }
-
-        .upload-container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .upload-area {
-            border: 2px dashed var(--border-color);
-            border-radius: 1rem;
-            padding: 4rem 2rem;
-            margin: 2rem 0;
-            background: var(--secondary-color);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary-color);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        .upload-area.dragover {
-            border-color: var(--primary-color);
-            background: rgba(37, 99, 235, 0.1);
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            font-size: 4rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .upload-area:hover .upload-icon {
-            color: var(--primary-color);
-            transform: scale(1.1);
-        }
-
-        .upload-text {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-
-        .upload-button {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .upload-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            margin: 2rem 0;
-            display: none;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--primary-color);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        /* Results Section */
-        .results {
-            margin-top: 2rem;
-            display: none;
-        }
-
-        .result-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            box-shadow: var(--card-shadow);
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .result-title {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .download-btn {
-            background: var(--success-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .download-btn:hover {
-            background: #059669;
-            transform: translateY(-1px);
-        }
-
-        /* Footer */
-        footer {
-            background: var(--text-primary);
-            color: white;
-            padding: 3rem 0 2rem;
-            text-align: center;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .footer-section p,
-        .footer-section a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            line-height: 1.6;
-        }
-
-        .footer-section a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 2rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1.1rem;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            nav ul {
-                gap: 1rem;
-            }
-
-            .upload-area {
-                padding: 2rem 1rem;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                text-align: left;
-            }
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="#" class="logo">PDF Extractor</a>
-                <nav>
-                    <ul>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#upload">Extract</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </nav>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <span>PDF Extractor</span>
+            </div>
+            <div class="nav-links">
+                <a href="#how-it-works" class="nav-link">How it works</a>
+                <a href="#upload" class="nav-link cta-link">Extract PDF</a>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <h1>Extract Text & Images from PDFs</h1>
-                    <p>Powerful, fast, and secure PDF extraction tool. Extract text content and images from any PDF document with just a few clicks.</p>
-                    <a href="#upload" class="cta-button">Start Extracting</a>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+        </div>
+        
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-magic"></i>
+                    <span>AI-Powered PDF Processing</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    Extract data from PDFs
+                    <span class="highlight">instantly</span>
+                </h1>
+                
+                <p class="hero-subtitle">
+                    Transform any PDF into structured data with our AI-powered extraction tool. 
+                    Fast, secure, and incredibly simple to use.
+                </p>
+                
+                <div class="hero-features">
+                    <div class="feature-pill">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Privacy Protected</span>
+                    </div>
+                    <div class="feature-pill">
+                        <i class="fas fa-bolt"></i>
+                        <span>Instant Processing</span>
+                    </div>
+                    <div class="feature-pill">
+                        <i class="fas fa-robot"></i>
+                        <span>AI Analysis</span>
+                    </div>
+                </div>
+                
+                <div class="hero-cta">
+                    <button class="btn-primary" onclick="scrollToUpload()">
+                        <span>Start Extracting</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <p class="hero-note">
+                        <i class="fas fa-check"></i>
+                        Free to use • No signup required
+                    </p>
                 </div>
             </div>
-        </section>
-
-        <section id="features" class="features">
-            <div class="container">
-                <div class="section-title">
-                    <h2>Powerful Features</h2>
-                    <p>Everything you need to extract content from PDF documents efficiently and accurately.</p>
-                </div>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <span class="feature-icon">📝</span>
-                        <h3>Text Extraction</h3>
-                        <p>Extract all text content from PDF documents while preserving formatting and structure. Perfect for content analysis and data mining.</p>
+            
+            <div class="hero-visual">
+                <div class="robot-container">
+                    <!-- Robot Head -->
+                    <div class="robot-head">
+                        <div class="robot-antenna left-antenna">
+                            <div class="antenna-ball"></div>
+                        </div>
+                        <div class="robot-antenna right-antenna">
+                            <div class="antenna-ball"></div>
+                        </div>
+                        <div class="robot-eyes">
+                            <div class="robot-eye left-eye">
+                                <div class="eye-pupil"></div>
+                            </div>
+                            <div class="robot-eye right-eye">
+                                <div class="eye-pupil"></div>
+                            </div>
+                        </div>
+                        <div class="robot-mouth">
+                            <div class="mouth-line"></div>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <span class="feature-icon">🖼️</span>
-                        <h3>Image Extraction</h3>
-                        <p>Extract embedded images from PDFs in high quality. Save images as PNG files for further use in your projects.</p>
+                    
+                    <!-- Robot Body -->
+                    <div class="robot-body">
+                        <div class="robot-chest">
+                            <div class="chest-panel">
+                                <div class="panel-light active"></div>
+                                <div class="panel-light"></div>
+                                <div class="panel-light active"></div>
+                            </div>
+                            <div class="chest-screen">
+                                <div class="screen-content">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <div class="processing-bars">
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <span class="feature-icon">⚡</span>
-                        <h3>Fast Processing</h3>
-                        <p>Lightning-fast extraction powered by advanced algorithms. Process large PDF files in seconds, not minutes.</p>
+                    
+                    <!-- Robot Arms -->
+                    <div class="robot-arms">
+                        <div class="robot-arm left-arm">
+                            <div class="arm-upper"></div>
+                            <div class="arm-lower"></div>
+                            <div class="arm-hand">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                        </div>
+                        <div class="robot-arm right-arm">
+                            <div class="arm-upper"></div>
+                            <div class="arm-lower"></div>
+                            <div class="arm-hand">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <span class="feature-icon">🔒</span>
-                        <h3>Secure & Private</h3>
-                        <p>Your documents are processed locally. No data is sent to external servers, ensuring complete privacy and security.</p>
+                    
+                    <!-- Robot Base -->
+                    <div class="robot-base">
+                        <div class="base-platform"></div>
+                        <div class="base-wheels">
+                            <div class="wheel left-wheel"></div>
+                            <div class="wheel right-wheel"></div>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <span class="feature-icon">📱</span>
-                        <h3>Cross-Platform</h3>
-                        <p>Works seamlessly across all devices and operating systems. Extract content anywhere, anytime.</p>
-                    </div>
-                    <div class="feature-card">
-                        <span class="feature-icon">💾</span>
-                        <h3>Multiple Formats</h3>
-                        <p>Export extracted content in various formats including TXT, JSON, and individual image files for maximum flexibility.</p>
+                    
+                    <!-- Floating Elements -->
+                    <div class="floating-elements">
+                        <div class="floating-icon" style="--delay: 0s;">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="floating-icon" style="--delay: 1s;">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="floating-icon" style="--delay: 2s;">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="upload" class="upload-section">
-            <div class="container">
-                <div class="upload-container">
-                    <div class="section-title">
-                        <h2>Extract Content Now</h2>
-                        <p>Upload your PDF file and extract text and images instantly.</p>
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How it works</h2>
+                <p class="section-subtitle">Three simple steps to extract your PDF data</p>
+            </div>
+            
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <h3>Upload PDF</h3>
+                    <p>Drag and drop your PDF file. We support password-protected files up to 50MB.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>AI Processing</h3>
+                    <p>Our AI automatically detects and extracts text with intelligent formatting and structure.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Export Data</h3>
+                    <p>Download as Excel, text, or chat with our AI to analyze your extracted data.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="upload" class="upload-section">
+        <div class="container">
+            <div class="upload-container">
+                <!-- Upload Card -->
+                <div class="upload-card" id="uploadCard">
+                    <div class="card-header">
+                        <h3>Upload your PDF</h3>
+                        <p>Drag and drop or click to browse</p>
                     </div>
                     
                     <div class="upload-area" id="uploadArea">
-                        <div class="upload-icon">📄</div>
-                        <div class="upload-text">
-                            <strong>Drop your PDF file here</strong><br>
-                            or click to browse
+                        <div class="upload-content">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h4>Drop your PDF here</h4>
+                            <p>or click to browse files</p>
+                            
+                            <div class="upload-specs">
+                                <div class="spec-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Up to 50MB</span>
+                                </div>
+                                <div class="spec-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Any PDF format</span>
+                                </div>
+                                <div class="spec-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Privacy protected</span>
+                                </div>
+                            </div>
                         </div>
-                        <button class="upload-button" onclick="document.getElementById('fileInput').click()">
-                            Choose File
+                        <input type="file" id="fileInput" accept=".pdf" hidden>
+                    </div>
+                    
+                    <div class="file-preview" id="filePreview" style="display: none;">
+                        <div class="file-info">
+                            <div class="file-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="file-details">
+                                <h4 id="fileName"></h4>
+                                <div class="file-meta">
+                                    <span id="fileSize"></span>
+                                    <span id="fileDate"></span>
+                                </div>
+                            </div>
+                            <button class="btn-remove" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Options Card -->
+                <div class="options-card" id="optionsCard" style="display: none;">
+                    <div class="card-header">
+                        <h3>Extraction Settings</h3>
+                        <p>Customize your extraction preferences</p>
+                    </div>
+                    
+                    <div class="option-grid">
+                        <div class="input-group">
+                            <label for="pageRange">
+                                <i class="fas fa-file-alt"></i>
+                                Page Range
+                            </label>
+                            <input type="text" id="pageRange" placeholder="e.g., 1-5, 10, 15-20 (all pages if empty)">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="exportFormat">
+                                <i class="fas fa-download"></i>
+                                Export Format
+                            </label>
+                            <select id="exportFormat">
+                                <option value="text">📄 Text Only (.txt)</option>
+                                <option value="excel-simple">📊 Excel - Simple Layout</option>
+                                <option value="excel-structured">📋 Excel - Smart Columns</option>
+                                <option value="excel-payroll" selected>⚡ Excel - Payroll Analysis</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="passwordInput">
+                                <i class="fas fa-lock"></i>
+                                PDF Password (optional)
+                            </label>
+                            <input type="password" id="passwordInput" placeholder="Enter password if needed">
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn-primary" id="extractBtn" onclick="extractText()">
+                            <i class="fas fa-magic"></i>
+                            <span id="extractBtnText">Extract Data</span>
                         </button>
-                        <input type="file" id="fileInput" class="file-input" accept=".pdf" multiple>
+                        <button class="btn-secondary" onclick="reset()">
+                            <i class="fas fa-arrow-left"></i>
+                            Choose Different File
+                        </button>
                     </div>
+                </div>
 
-                    <div class="progress-container" id="progressContainer">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="progressFill"></div>
+                <!-- Results Card -->
+                <div class="results-card" id="resultsCard" style="display: none;">
+                    <div class="card-header success">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
                         </div>
-                        <p id="progressText">Processing...</p>
+                        <div>
+                            <h3>Extraction Complete!</h3>
+                            <div id="extractionStats" class="stats"></div>
+                        </div>
                     </div>
-
-                    <div class="results" id="results">
-                        <!-- Results will be populated here -->
+                    
+                    <div id="extractionStatus" class="status-container"></div>
+                    
+                    <div class="download-section">
+                        <h4>Download Options</h4>
+                        <div class="download-grid">
+                            <button class="download-btn primary" onclick="downloadExcel()">
+                                <div class="download-icon">
+                                    <i class="fas fa-file-excel"></i>
+                                </div>
+                                <div class="download-info">
+                                    <span>Excel File</span>
+                                    <small>Structured data</small>
+                                </div>
+                            </button>
+                            
+                            <button class="download-btn" onclick="downloadText()">
+                                <div class="download-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="download-info">
+                                    <span>Text File</span>
+                                    <small>Plain text</small>
+                                </div>
+                            </button>
+                            
+                            <button class="download-btn" onclick="copyText()">
+                                <div class="download-icon">
+                                    <i class="fas fa-copy"></i>
+                                </div>
+                                <div class="download-info">
+                                    <span>Copy Text</span>
+                                    <small>To clipboard</small>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Analysis Panel -->
+                    <div class="ai-panel">
+                        <div class="ai-header">
+                            <div class="ai-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div>
+                                <h4>AI Analysis Ready</h4>
+                                <p>Chat with our AI to analyze your data</p>
+                            </div>
+                        </div>
+                        <button class="btn-ai" onclick="openAIChat()">
+                            <i class="fas fa-comments"></i>
+                            Start AI Chat
+                        </button>
+                    </div>
+                    
+                    <!-- Text Preview -->
+                    <div class="text-preview">
+                        <div class="preview-header">
+                            <h4>
+                                <i class="fas fa-eye"></i>
+                                Text Preview
+                            </h4>
+                            <button class="btn-expand" onclick="togglePreview()">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                        <textarea id="extractedText" readonly placeholder="Extracted text will appear here..."></textarea>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="reset()">
+                            <i class="fas fa-plus"></i>
+                            Extract Another PDF
+                        </button>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <footer>
+    <!-- Footer -->
+    <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>PDF Extractor</h3>
-                    <p>The most powerful and user-friendly PDF extraction tool. Extract text and images from any PDF document with ease.</p>
+                <div class="footer-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <span>PDF Extractor</span>
                 </div>
-                <div class="footer-section">
-                    <h3>Features</h3>
-                    <p><a href="#features">Text Extraction</a></p>
-                    <p><a href="#features">Image Extraction</a></p>
-                    <p><a href="#features">Batch Processing</a></p>
-                    <p><a href="#features">Secure Processing</a></p>
-                </div>
-                <div class="footer-section">
-                    <h3>Support</h3>
-                    <p><a href="#contact">Contact Us</a></p>
-                    <p><a href="#about">Documentation</a></p>
-                    <p><a href="#about">FAQ</a></p>
-                    <p><a href="#about">Privacy Policy</a></p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 PDF Extractor by BlockCell. All rights reserved.</p>
+                <p>AI-powered PDF data extraction made simple</p>
             </div>
         </div>
     </footer>
 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <h3 id="loadingText">Processing PDF...</h3>
+            <p id="loadingSubtext">This may take a few moments</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget" id="aiChatWidget">
+        <div class="chat-toggle" id="chatToggle">
+            <i class="fas fa-robot"></i>
+            <div class="chat-badge">AI</div>
+        </div>
+        
+        <div class="chat-window" id="chatWindow" style="display: none;">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </div>
+                <button class="chat-close" id="chatClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>👋 Hi! I'm your AI assistant. Upload a PDF and I'll help you analyze the extracted data, answer questions, and provide insights!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <div class="input-container">
+                    <input type="text" id="chatInput" placeholder="Upload a PDF first..." disabled>
+                    <button id="chatSend" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="quick-actions" id="quickActions" style="display: none;">
+                    <button class="quick-btn" data-action="summarize">📊 Summarize</button>
+                    <button class="quick-btn" data-action="analyze">🔍 Analyze</button>
+                    <button class="quick-btn" data-action="insights">💡 Insights</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        // Scroll to upload function
+        function scrollToUpload() {
+            document.getElementById('upload').scrollIntoView({ 
+                behavior: 'smooth' 
             });
+        }
+        
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Hero animations
+        gsap.timeline({ delay: 0.3 })
+            .from('.hero-badge', { 
+                y: 30, 
+                opacity: 0, 
+                duration: 0.6, 
+                ease: 'power3.out' 
+            })
+            .from('.hero-title', { 
+                y: 50, 
+                opacity: 0, 
+                duration: 0.8, 
+                ease: 'power3.out' 
+            }, '-=0.3')
+            .from('.hero-subtitle', { 
+                y: 30, 
+                opacity: 0, 
+                duration: 0.6, 
+                ease: 'power3.out' 
+            }, '-=0.4')
+            .from('.hero-features', { 
+                y: 30, 
+                opacity: 0, 
+                duration: 0.6, 
+                ease: 'power3.out' 
+            }, '-=0.3')
+            .from('.hero-cta', { 
+                y: 30, 
+                opacity: 0, 
+                duration: 0.6, 
+                ease: 'power3.out' 
+            }, '-=0.2')
+            .from('.robot-container', { 
+                x: 100, 
+                opacity: 0, 
+                duration: 1, 
+                ease: 'power3.out' 
+            }, '-=0.8');
+        
+        // Robot animations
+        gsap.to('.robot-head', {
+            y: -10,
+            duration: 3,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+        });
+        
+        gsap.to('.left-arm', {
+            rotation: 10,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            transformOrigin: 'top center'
+        });
+        
+        gsap.to('.right-arm', {
+            rotation: -10,
+            duration: 2.5,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            transformOrigin: 'top center'
+        });
+        
+        gsap.to('.eye-pupil', {
+            x: 3,
+            duration: 4,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+        });
+        
+        gsap.to('.antenna-ball', {
+            y: -5,
+            duration: 1.5,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            stagger: 0.3
+        });
+        
+        gsap.to('.processing-bars .bar', {
+            scaleY: 0.3,
+            duration: 0.8,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            stagger: 0.2
+        });
+        
+        gsap.to('.floating-icon', {
+            y: -20,
+            duration: 3,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            stagger: 0.5
+        });
+        
+        // Steps animation
+        gsap.from('.step-card', {
+            scrollTrigger: {
+                trigger: '.steps-container',
+                start: 'top 80%',
+            },
+            y: 50,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.2,
+            ease: 'power3.out'
+        });
+        
+        // Floating orbs animation
+        gsap.to('.orb-1', {
+            x: 50,
+            y: -30,
+            duration: 6,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+        });
+        
+        gsap.to('.orb-2', {
+            x: -40,
+            y: 40,
+            duration: 8,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+        });
+        
+        gsap.to('.orb-3', {
+            x: 30,
+            y: 50,
+            duration: 10,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
         });
 
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(255, 255, 255, 0.98)';
-                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-            } else {
-                header.style.background = 'rgba(255, 255, 255, 0.95)';
-                header.style.boxShadow = 'none';
-            }
-        });
-
-        // File upload functionality
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressFill = document.getElementById('progressFill');
-        const progressText = document.getElementById('progressText');
-        const results = document.getElementById('results');
-
-        // Drag and drop functionality
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            handleFiles(files);
-        });
-
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
-
-        function handleFiles(files) {
-            if (files.length === 0) return;
-            
-            // Show progress
-            progressContainer.style.display = 'block';
-            results.style.display = 'none';
-            
-            // Simulate processing
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    showResults(files);
-                }
-                progressFill.style.width = progress + '%';
-                progressText.textContent = `Processing... ${Math.round(progress)}%`;
-            }, 200);
+        // Placeholder functions for interactivity
+        function removeFile() {
+            console.log('Remove file');
         }
 
-        function showResults(files) {
-            setTimeout(() => {
-                progressContainer.style.display = 'none';
-                results.style.display = 'block';
-                results.innerHTML = '';
-                
-                Array.from(files).forEach((file, index) => {
-                    const resultCard = document.createElement('div');
-                    resultCard.className = 'result-card fade-in';
-                    resultCard.innerHTML = `
-                        <div class="result-header">
-                            <div class="result-title">📄 ${file.name}</div>
-                            <div>
-                                <button class="download-btn" onclick="downloadText('${file.name}')">
-                                    📝 Download Text
-                                </button>
-                                <button class="download-btn" onclick="downloadImages('${file.name}')" style="margin-left: 0.5rem;">
-                                    🖼️ Download Images
-                                </button>
-                            </div>
-                        </div>
-                        <p style="color: var(--text-secondary); margin: 0;">
-                            ✅ Text extracted successfully<br>
-                            ✅ ${Math.floor(Math.random() * 10) + 1} images found and extracted
-                        </p>
-                    `;
-                    results.appendChild(resultCard);
-                });
-            }, 500);
+        function extractText() {
+            console.log('Extract text');
         }
 
-        function downloadText(filename) {
-            // Simulate text download
-            const element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent('Extracted text from ' + filename));
-            element.setAttribute('download', filename.replace('.pdf', '_text.txt'));
-            element.style.display = 'none';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
+        function reset() {
+            console.log('Reset');
         }
 
-        function downloadImages(filename) {
-            // Simulate images download
-            alert('Images from ' + filename + ' would be downloaded as a ZIP file.');
+        function downloadExcel() {
+            console.log('Download Excel');
         }
 
-        // Intersection Observer for animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+        function downloadText() {
+            console.log('Download text');
+        }
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in');
-                }
-            });
-        }, observerOptions);
+        function copyText() {
+            console.log('Copy text');
+        }
 
-        // Observe feature cards
-        document.querySelectorAll('.feature-card').forEach(card => {
-            observer.observe(card);
+        function togglePreview() {
+            console.log('Toggle preview');
+        }
+
+        function openAIChat() {
+            document.getElementById('chatWindow').style.display = 'flex';
+        }
+
+        // Chat widget functionality
+        document.getElementById('chatToggle').addEventListener('click', function() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        document.getElementById('chatClose').addEventListener('click', function() {
+            document.getElementById('chatWindow').style.display = 'none';
         });
     </script>
 </body>
